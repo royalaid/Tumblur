@@ -70,6 +70,11 @@ class MainActivity : AppCompatActivity() {
         val consumerKey = getString(R.string.consumer_key)
         val consumerSecret = getString(R.string.consumer_secret)
 
+        try { consumer.token }
+        catch (e: UninitializedPropertyAccessException){
+            consumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
+        }
+
         pref = PreferenceManager.getDefaultSharedPreferences(this)
 
         token = pref.getString("TUMBLR_OAUTH_TOKEN", "")
