@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val consumerKey = getString(R.string.consumer_key)
         val consumerSecret = getString(R.string.consumer_secret)
-
         try { consumer.token }
         catch (e: UninitializedPropertyAccessException){
             consumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
@@ -252,7 +251,6 @@ class MainActivity : AppCompatActivity() {
 //            val imageView = findViewById<ImageView>(R.id.imageView)
 //            imageView.loadUrl((dash[0] as PhotoPost).photos[0].originalSize.url)
 //        }
-
     }
 
     class RequestTask : AsyncTask<Pair<OAuthProvider, OAuthConsumer>, Void, Result>() {

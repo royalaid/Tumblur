@@ -9,11 +9,13 @@
 
     <ProgressBar
         android:id="@+id/post_img_progress"
-        style="@style/Widget.AppCompat.ProgressBar"
+        style="?android:progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginBottom="603dp"
+        android:max="100"
+        android:progress="0"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/post_img"
