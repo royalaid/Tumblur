@@ -2,6 +2,7 @@ package me.royalaid.tumblur;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -9,26 +10,31 @@ import android.widget.ProgressBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
+import static android.support.constraint.Constraints.TAG;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class GlideImageLoader {
 
-    private ImageView mImageView;
-    private ProgressBar mProgressBar;
+    ImageView mImageView;
+    ProgressBar mProgressBar;
+    RequestManager requestManager;
 
-    public GlideImageLoader(ImageView imageView, ProgressBar progressBar) {
+    public GlideImageLoader(RequestManager glide, ImageView imageView, ProgressBar progressBar) {
+       requestManager = glide;
         mImageView = imageView;
         mProgressBar = progressBar;
     }
 
     public void load(final String url) {
         if (url == null) return;
+        Log.i("Loading", "Loading " + url);
         onConnecting();
 
         //set Listener & start
@@ -46,22 +52,17 @@ public class GlideImageLoader {
             }
         });
         //Get Image
-        getRequestBuilder(url).into(mImageView);
+        getRequestBuilder(requestManager, url).into(mImageView);
     }
 
-    RequestBuilder<Drawable> getRequestBuilder(final String url) {
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .priority(Priority.HIGH);
-
-        return Glide.with(mImageView.getContext())
+    RequestBuilder<Drawable> getRequestBuilder(RequestManager requestManager, final String url) {
+        return requestManager
                 .load(url)
-                .transition(withCrossFade())
-                .apply(options.skipMemoryCache(true))
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         ProgressAppGlideModule.forget(url);
+                        Log.e("Error", "Load failed", e);
                         onFinished();
                         return false;
                     }

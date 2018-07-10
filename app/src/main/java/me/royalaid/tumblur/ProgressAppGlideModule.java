@@ -3,7 +3,6 @@ package me.royalaid.tumblur;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Registry;
@@ -16,7 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.ConnectionPool;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -37,6 +38,10 @@ public class ProgressAppGlideModule extends AppGlideModule {
     public void registerComponents(Context context, Glide glide, Registry registry) {
         super.registerComponents(context, glide, registry);
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectionPool(new ConnectionPool(20, 10,  TimeUnit.SECONDS))
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .addNetworkInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
@@ -57,6 +62,10 @@ public class ProgressAppGlideModule extends AppGlideModule {
     }
     public static void expect(String url, ProgressAppGlideModule.UIonProgressListener listener) {
         ProgressAppGlideModule.DispatchingProgressListener.expect(url, listener);
+    }
+
+    public static Long getProgress(String url){
+        return DispatchingProgressListener.PROGRESSES.get(url);
     }
 
     private interface ResponseProgressListener {
@@ -93,7 +102,6 @@ public class ProgressAppGlideModule extends AppGlideModule {
 
         @Override
         public void update(HttpUrl url, final long bytesRead, final long contentLength) {
-            Log.i("Update", String.format("%s: %d/%d = %.2f%%%n", url, bytesRead, contentLength, (100f * bytesRead) / contentLength));
             String key = url.toString();
             final UIonProgressListener listener = LISTENERS.get(key);
             if (listener == null) {

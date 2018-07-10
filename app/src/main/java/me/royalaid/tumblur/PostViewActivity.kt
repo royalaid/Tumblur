@@ -3,6 +3,7 @@ package me.royalaid.tumblur
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.google.gson.Gson
 import com.tumblr.jumblr.types.Post
 import kotlinx.android.synthetic.main.activity_post_view.*
@@ -13,6 +14,7 @@ class PostViewActivity : AppCompatActivity() {
     private lateinit var post:Post
 
     private fun GifImageView.loadUrl(url: String) {
+        Log.i("Load", "Now viewing $url")
         GlideApp.with(context).load(url).into(this)
     }
 
